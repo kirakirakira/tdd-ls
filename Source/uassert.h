@@ -1,8 +1,6 @@
 /*!
  * @file
  * @brief User-defined assert mechanism
- *
- * Copyright (c) 2013 - General Electric - All rights reserved.
  */
 
 #ifndef UASSERT_H_
