@@ -1,8 +1,6 @@
 /*!
  * @file
  * @brief TDD test runner.
- *
- * Copyright (c) 2013 - General Electric - All rights reserved.
  */
 
 #include "CppUTest/CommandLineTestRunner.h"
