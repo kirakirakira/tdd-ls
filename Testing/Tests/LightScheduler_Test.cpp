@@ -1,3 +1,8 @@
+/*!
+ * @file
+ * @brief Tests for light scheduler implementation.
+ */
+
 extern "C"
 {
 #include "LightScheduler.h"
