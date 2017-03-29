@@ -32,102 +32,163 @@
 
 TEST_GROUP(UtestShell)
 {
-	TestTestingFixture fixture;
+    TestTestingFixture fixture;
 };
 
 static void _failMethod()
 {
-	FAIL("This test fails");
+    FAIL("This test fails");
 }
 
 static void _passingTestMethod()
 {
-	CHECK(true);
+    CHECK(true);
+}
+
+static void _passingCheckEqualTestMethod()
+{
+    CHECK_EQUAL(1, 1);
 }
 
 TEST(UtestShell, compareDoubles)
 {
-	double zero = 0.0;
-	double not_a_number = zero / zero;
-	CHECK(doubles_equal(1.0, 1.001, 0.01));
-	CHECK(!doubles_equal(not_a_number, 1.001, 0.01));
-	CHECK(!doubles_equal(1.0, not_a_number, 0.01));
-	CHECK(!doubles_equal(1.0, 1.001, not_a_number));
-	CHECK(!doubles_equal(1.0, 1.1, 0.05));
+    double zero = 0.0;
+    double not_a_number = zero / zero;
+    CHECK(doubles_equal(1.0, 1.001, 0.01));
+    CHECK(!doubles_equal(not_a_number, 1.001, 0.01));
+    CHECK(!doubles_equal(1.0, not_a_number, 0.01));
+    CHECK(!doubles_equal(1.0, 1.001, not_a_number));
+    CHECK(!doubles_equal(1.0, 1.1, 0.05));
 
-	double a = 1.2345678;
-	CHECK(doubles_equal(a, a, 0.000000001));
+    double a = 1.2345678;
+    CHECK(doubles_equal(a, a, 0.000000001));
 }
+
+TEST(UtestShell, FailWillIncreaseTheAmountOfChecks)
+{
+    fixture.setTestFunction(_failMethod);
+    fixture.runAllTests();
+    LONGS_EQUAL(1, fixture.getCheckCount());
+}
+
+TEST(UtestShell, PassedCheckEqualWillIncreaseTheAmountOfChecks)
+{
+    fixture.setTestFunction(_passingCheckEqualTestMethod);
+    fixture.runAllTests();
+    LONGS_EQUAL(1, fixture.getCheckCount());
+}
+
 
 IGNORE_TEST(UtestShell, IgnoreTestAccessingFixture)
 {
-	CHECK(&fixture != 0);
+    CHECK(&fixture != 0);
 }
 
 TEST(UtestShell, MacrosUsedInSetup)
 {
-	IGNORE_ALL_LEAKS_IN_TEST();
-	fixture.setSetup(_failMethod);
-	fixture.setTestFunction(_passingTestMethod);
-	fixture.runAllTests();
-	LONGS_EQUAL(1, fixture.getFailureCount());
+    IGNORE_ALL_LEAKS_IN_TEST();
+    fixture.setSetup(_failMethod);
+    fixture.setTestFunction(_passingTestMethod);
+    fixture.runAllTests();
+    LONGS_EQUAL(1, fixture.getFailureCount());
 }
 
 TEST(UtestShell, MacrosUsedInTearDown)
 {
-	IGNORE_ALL_LEAKS_IN_TEST();
-	fixture.setTeardown(_failMethod);
-	fixture.setTestFunction(_passingTestMethod);
-	fixture.runAllTests();
-	LONGS_EQUAL(1, fixture.getFailureCount());
+    IGNORE_ALL_LEAKS_IN_TEST();
+    fixture.setTeardown(_failMethod);
+    fixture.setTestFunction(_passingTestMethod);
+    fixture.runAllTests();
+    LONGS_EQUAL(1, fixture.getFailureCount());
 }
 
 static int teardownCalled = 0;
 
 static void _teardownMethod()
 {
-	teardownCalled++;
+    teardownCalled++;
 }
 
 TEST(UtestShell, TeardownCalledAfterTestFailure)
 {
-	teardownCalled = 0;
-	IGNORE_ALL_LEAKS_IN_TEST();
-	fixture.setTeardown(_teardownMethod);
-	fixture.setTestFunction(_failMethod);
-	fixture.runAllTests();
-	LONGS_EQUAL(1, fixture.getFailureCount());
-	LONGS_EQUAL(1, teardownCalled);
+    teardownCalled = 0;
+    IGNORE_ALL_LEAKS_IN_TEST();
+    fixture.setTeardown(_teardownMethod);
+    fixture.setTestFunction(_failMethod);
+    fixture.runAllTests();
+    LONGS_EQUAL(1, fixture.getFailureCount());
+    LONGS_EQUAL(1, teardownCalled);
 }
 
 static int stopAfterFailure = 0;
 static void _stopAfterFailureMethod()
 {
-	FAIL("fail");
-	stopAfterFailure++;
+    FAIL("fail");
+    stopAfterFailure++;
 }
 
 TEST(UtestShell, TestStopsAfterTestFailure)
 {
-	IGNORE_ALL_LEAKS_IN_TEST();
-	stopAfterFailure = 0;
-	fixture.setTestFunction(_stopAfterFailureMethod);
-	fixture.runAllTests();
-	CHECK(fixture.hasTestFailed());
-	LONGS_EQUAL(1, fixture.getFailureCount());
-	LONGS_EQUAL(0, stopAfterFailure);
+    IGNORE_ALL_LEAKS_IN_TEST();
+    stopAfterFailure = 0;
+    fixture.setTestFunction(_stopAfterFailureMethod);
+    fixture.runAllTests();
+    CHECK(fixture.hasTestFailed());
+    LONGS_EQUAL(1, fixture.getFailureCount());
+    LONGS_EQUAL(0, stopAfterFailure);
 }
 
 TEST(UtestShell, TestStopsAfterSetupFailure)
 {
-	stopAfterFailure = 0;
-	fixture.setSetup(_stopAfterFailureMethod);
-	fixture.setTeardown(_stopAfterFailureMethod);
-	fixture.setTestFunction(_failMethod);
-	fixture.runAllTests();
-	LONGS_EQUAL(2, fixture.getFailureCount());
-	LONGS_EQUAL(0, stopAfterFailure);
+    stopAfterFailure = 0;
+    fixture.setSetup(_stopAfterFailureMethod);
+    fixture.setTeardown(_stopAfterFailureMethod);
+    fixture.setTestFunction(_failMethod);
+    fixture.runAllTests();
+    LONGS_EQUAL(2, fixture.getFailureCount());
+    LONGS_EQUAL(0, stopAfterFailure);
 }
+
+class defaultUtestShell: public UtestShell
+{
+};
+
+TEST(UtestShell, this_test_covers_the_UtestShell_createTest_and_Utest_testBody_methods)
+{
+    defaultUtestShell shell;
+    fixture.addTest(&shell);
+    fixture.runAllTests();
+    LONGS_EQUAL(2, fixture.result_->getTestCount());
+}
+
+static void StubPlatformSpecificRunTestInASeperateProcess(UtestShell* shell, TestPlugin*, TestResult* result)
+{
+    result->addFailure(TestFailure(shell, "Failed in separate process"));
+}
+
+TEST(UtestShell, RunInSeparateProcessTest)
+{
+    UT_PTR_SET(PlatformSpecificRunTestInASeperateProcess, StubPlatformSpecificRunTestInASeperateProcess);
+    fixture.registry_->setRunTestsInSeperateProcess();
+    fixture.runAllTests();
+    fixture.assertPrintContains("Failed in separate process");
+}
+
+#if !defined(__MINGW32__) && !defined(_MSC_VER)
+
+TEST(UtestShell, TestDefaultCrashMethodInSeparateProcessTest)
+{
+    fixture.setTestFunction(UtestShell::crash);
+    fixture.registry_->setRunTestsInSeperateProcess();
+    fixture.runAllTests();
+    fixture.assertPrintContains("Failed in separate process - killed by signal 11");
+}
+
+#else
+
+IGNORE_TEST(UtestShell, TestDefaultCrashMethodInSeparateProcessTest) {}
+
+#endif
 
 #if CPPUTEST_USE_STD_CPP_LIB
 
@@ -135,38 +196,38 @@ static bool destructorWasCalledOnFailedTest = false;
 
 static void _destructorCalledForLocalObjects()
 {
-	SetBooleanOnDestructorCall pleaseCallTheDestructor(destructorWasCalledOnFailedTest);
-	destructorWasCalledOnFailedTest = false;
-	FAIL("fail");
+    SetBooleanOnDestructorCall pleaseCallTheDestructor(destructorWasCalledOnFailedTest);
+    destructorWasCalledOnFailedTest = false;
+    FAIL("fail");
 }
 
 TEST(UtestShell, DestructorIsCalledForLocalObjectsWhenTheTestFails)
 {
-	fixture.setTestFunction(_destructorCalledForLocalObjects);
-	fixture.runAllTests();
-	CHECK(destructorWasCalledOnFailedTest);
+    fixture.setTestFunction(_destructorCalledForLocalObjects);
+    fixture.runAllTests();
+    CHECK(destructorWasCalledOnFailedTest);
 }
 
 #endif
 
 TEST_BASE(MyOwnTest)
 {
-	MyOwnTest() :
-		inTest(false)
-	{
-	}
-	bool inTest;
+    MyOwnTest() :
+        inTest(false)
+    {
+    }
+    bool inTest;
 
-	void setup()
-	{
-		CHECK(!inTest);
-		inTest = true;
-	}
-	void teardown()
-	{
-		CHECK(inTest);
-		inTest = false;
-	}
+    void setup()
+    {
+        CHECK(!inTest);
+        inTest = true;
+    }
+    void teardown()
+    {
+        CHECK(inTest);
+        inTest = false;
+    }
 };
 
 TEST_GROUP_BASE(UtestMyOwn, MyOwnTest)
@@ -175,7 +236,7 @@ TEST_GROUP_BASE(UtestMyOwn, MyOwnTest)
 
 TEST(UtestMyOwn, test)
 {
-	CHECK(inTest);
+    CHECK(inTest);
 }
 
 class NullParameterTest: public UtestShell
@@ -184,40 +245,40 @@ class NullParameterTest: public UtestShell
 
 TEST(UtestMyOwn, NullParameters)
 {
-	NullParameterTest nullTest; /* Bug fix tests for creating a test without a name, fix in SimpleString */
-	TestRegistry* reg = TestRegistry::getCurrentRegistry();
-	nullTest.shouldRun(reg->getGroupFilter(), reg->getNameFilter());
+    NullParameterTest nullTest; /* Bug fix tests for creating a test without a name, fix in SimpleString */
+    TestFilter emptyFilter;
+    CHECK(nullTest.shouldRun(&emptyFilter, &emptyFilter));
 }
 
 class AllocateAndDeallocateInConstructorAndDestructor
 {
-	char* memory_;
-	char* morememory_;
+    char* memory_;
+    char* morememory_;
 public:
-	AllocateAndDeallocateInConstructorAndDestructor()
-	{
-		memory_ = new char[100];
-		morememory_ = NULL;
-	}
-	void allocateMoreMemory()
-	{
-		morememory_ = new char[123];
-	}
+    AllocateAndDeallocateInConstructorAndDestructor()
+    {
+        memory_ = new char[100];
+        morememory_ = NULL;
+    }
+    void allocateMoreMemory()
+    {
+        morememory_ = new char[123];
+    }
 
-	~AllocateAndDeallocateInConstructorAndDestructor()
-	{
-		delete [] memory_;
-		delete [] morememory_;
-	}
+    ~AllocateAndDeallocateInConstructorAndDestructor()
+    {
+        delete [] memory_;
+        delete [] morememory_;
+    }
 };
 
 TEST_GROUP(CanHaveMemberVariablesInTestGroupThatAllocateMemoryWithoutCausingMemoryLeaks)
 {
-	AllocateAndDeallocateInConstructorAndDestructor dummy;
+    AllocateAndDeallocateInConstructorAndDestructor dummy;
 };
 
 TEST(CanHaveMemberVariablesInTestGroupThatAllocateMemoryWithoutCausingMemoryLeaks, testInTestGroupName)
 {
-	dummy.allocateMoreMemory();
+    dummy.allocateMoreMemory();
 }
 

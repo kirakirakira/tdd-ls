@@ -8,10 +8,10 @@
 2. Build CppUTest and examples
 
 2a. For unix/gcc (including cygwin)
- > cd <someDirectory>/CppUTest
- > configure
+ > cd <someDirectory>/CppUTest/cpputest_build
+ > ../configure
  > make
- > make check (This is to run the CppUTest unit tests)
+ > make tdd   # This is to run the CppUTest unit tests
   
 2b. For Microsoft Visual C++ V6
  Double click <someDirectory>/CppUTest/CppUTest.dsw
@@ -26,6 +26,11 @@
  
  NOTE: To create your own project, you need to have CppUTest and your project 
  compiled with the same compile and link settings
+
+2c. For ARMCC from Keil MDK-ARM (building CppUTest library only)
+ > make all -C platforms/armcc
+ Please see README and Makefile in platforms/armcc to adjust options, default
+ CPU architecture is ARM7TDMI and default CPU execution mode is THUMB.
  
 3c. For Microsoft Visual Studio 2008
  Double click <someDirectory>/CppUTest/CppUTest.sln

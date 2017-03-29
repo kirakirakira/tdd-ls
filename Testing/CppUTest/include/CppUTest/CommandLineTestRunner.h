@@ -33,7 +33,6 @@
 #include "CommandLineArguments.h"
 #include "TestFilter.h"
 
-class JUnitTestOutput;
 class TestRegistry;
 
 #define DEF_PLUGIN_MEM_LEAK "MemoryLeakPlugin"
@@ -42,31 +41,27 @@ class TestRegistry;
 class CommandLineTestRunner
 {
 public:
-	enum OutputType
-	{
-		OUTPUT_NORMAL, OUTPUT_JUNIT
-	};
+    static int RunAllTests(int ac, const char** av);
+    static int RunAllTests(int ac, char** av);
 
-	static int RunAllTests(int ac, const char** av);
-	static int RunAllTests(int ac, char** av);
-	CommandLineTestRunner(int ac, const char** av, TestOutput*, TestRegistry* registry);
+    CommandLineTestRunner(int ac, const char** av, TestRegistry* registry);
+    virtual ~CommandLineTestRunner();
 
-	virtual ~CommandLineTestRunner();
-	int runAllTestsMain();
+    int runAllTestsMain();
 
+protected:
+    virtual TestOutput* createJUnitOutput(const SimpleString& packageName);
+    virtual TestOutput* createConsoleOutput();
+    virtual TestOutput* createCompositeOutput(TestOutput* outputOne, TestOutput* outputTwo);
+
+    TestOutput* output_;
 private:
-	TestOutput* output_;
-	JUnitTestOutput* jUnitOutput_;
-	CommandLineArguments* arguments_;
-	TestRegistry* registry_;
+    CommandLineArguments* arguments_;
+    TestRegistry* registry_;
 
-	bool parseArguments(TestPlugin*);
-	int runAllTests();
-	void initializeTestRun();
-	bool isVerbose();
-	int getRepeatCount();
-	TestFilter getGroupFilter();
-	TestFilter getNameFilter();
+    bool parseArguments(TestPlugin*);
+    int runAllTests();
+    void initializeTestRun();
 };
 
 #endif

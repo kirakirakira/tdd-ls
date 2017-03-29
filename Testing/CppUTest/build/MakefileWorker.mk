@@ -497,7 +497,11 @@ $(TEST_TARGET): $(TEST_DEPS)
 $(TARGET_LIB): $(OBJ)
 	@echo Building archive $@
 	$(SILENCE)mkdir -p $(dir $@)
+ifeq ($(UNAME_OS),$(MINGW_STR))
+	$(SILENCE)echo $^ | xargs -n 25 $(AR) $(ARFLAGS) $@
+else
 	$(SILENCE)$(AR) $(ARFLAGS) $@ $^
+endif
 	$(SILENCE)$(RANLIB) $@
 
 test: $(TEST_TARGET)
@@ -523,7 +527,6 @@ endif
 .PHONY: clean
 clean:
 	@echo Making clean
-	$(SILENCE)$(RM) $(STUFF_TO_CLEAN)
 	$(SILENCE)rm -rf gcov $(CPPUTEST_OBJS_DIR)
 	$(SILENCE)find . -name "*.gcno" | xargs rm -f
 	$(SILENCE)find . -name "*.gcda" | xargs rm -f

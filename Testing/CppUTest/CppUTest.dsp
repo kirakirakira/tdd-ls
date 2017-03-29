@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".\include\Platforms\VisualCpp" /I ".\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "CPPUTEST_MEM_LEAK_DETECTION_DISABLED" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -49,7 +49,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo
+# ADD LIB32 /nologo /out:"lib\CppUTest.lib"
 
 !ELSEIF  "$(CFG)" == "CppUTest - Win32 Debug"
 
@@ -64,7 +64,8 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /ZI /Od /I ".\include" /I ".\include\Platforms\VisualCpp" /D "_LIB" /D "WIN32" /D "_DEBUG" /D "_MBCS" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /ZI /Od /I ".\include\Platforms\VisualCpp" /I ".\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "CPPUTEST_MEM_LEAK_DETECTION_DISABLED" /FR /FD /GZ /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -72,12 +73,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"lib\CppUTest.lib"
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-PreLink_Cmds=del lib\vc6\CppUTest.lib	del lib\CppUTest.lib
-PostBuild_Cmds=copy lib\CppUTest.lib lib\vc6\CppUTest.lib	copy Debug\vc60.pdb lib\vc6\vc60.pdb
-# End Special Build Tool
+# ADD LIB32 /nologo /out:"lib\CppUTestd.lib"
 
 !ENDIF 
 
@@ -90,63 +86,119 @@ PostBuild_Cmds=copy lib\CppUTest.lib lib\vc6\CppUTest.lib	copy Debug\vc60.pdb li
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\src\CppUTest\CommandLineArguments.cpp
+SOURCE=.\src\CppUTestExt\CodeMemoryReportFormatter.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\CommandLineTestRunner.cpp
+SOURCE=.\src\CppUTestExt\MemoryReportAllocator.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\JUnitTestOutput.cpp
+SOURCE=.\src\CppUTestExt\MemoryReporterPlugin.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\MemoryLeakDetector.cpp
+SOURCE=.\src\CppUTestExt\MemoryReportFormatter.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\MemoryLeakWarningPlugin.cpp
+SOURCE=.\src\CppUTestExt\MockActualCall.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\SimpleString.cpp
+SOURCE=.\src\CppUTestExt\MockExpectedCall.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\TestFailure.cpp
+SOURCE=.\src\CppUTestExt\MockExpectedCallsList.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\TestFilter.cpp
+SOURCE=.\src\CppUTestExt\MockFailure.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\TestHarness_c.cpp
+SOURCE=.\src\CppUTestExt\MockNamedValue.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\TestMemoryAllocator.cpp
+SOURCE=.\src\CppUTestExt\MockSupport.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\TestOutput.cpp
+SOURCE=.\src\CppUTestExt\MockSupportPlugin.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\TestPlugin.cpp
+SOURCE=.\src\CppUTestExt\MockSupport_c.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\TestRegistry.cpp
+SOURCE=.\src\CppUTestExt\OrderedTest.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\TestResult.cpp
+SOURCE=.\SRC\CPPUTEST\CommandLineArguments.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\CppUTest\Utest.cpp
+SOURCE=.\SRC\CPPUTEST\CommandLineTestRunner.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\JUnitTestOutput.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\MemoryLeakDetector.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\MemoryLeakWarningPlugin.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\SimpleMutex.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\SimpleString.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\TestFailure.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\TestFilter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\TestHarness_c.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\TestMemoryAllocator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\TestOutput.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\TestPlugin.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\TestRegistry.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\TestResult.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SRC\CPPUTEST\Utest.cpp
 # End Source File
 # Begin Source File
 
@@ -158,7 +210,63 @@ SOURCE=.\src\Platforms\VisualCpp\UtestPlatform.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\include\CppUTest\CommandLineArguments.h
+SOURCE=.\include\CppUTestExt\CodeMemoryReportFormatter.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\GMock.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\GTestConvertor.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MemoryReportAllocator.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MemoryReporterPlugin.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MemoryReportFormatter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MockCheckedActualCall.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MockCheckedExpectedCall.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MockExpectedCallsList.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MockFailure.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MockNamedValue.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MockSupport.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MockSupportPlugin.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\MockSupport_c.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTestExt\OrderedTest.h
 # End Source File
 # Begin Source File
 
@@ -166,19 +274,19 @@ SOURCE=.\include\CppUTest\CommandLineTestRunner.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\CppUTest\JUnitTestOutput.h
+SOURCE=.\include\CppUTest\EqualsFailure.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\CppUTest\MemoryLeakDetector.h
+SOURCE=.\include\CppUTest\Failure.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\CppUTest\MemoryLeakDetectorMallocMacros.h
+SOURCE=.\include\CppUTest\JunitTestOutput.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\CppUTest\MemoryLeakDetectorNewMacros.h
+SOURCE=.\include\CppUTest\MemoryLeakWarning.h
 # End Source File
 # Begin Source File
 
@@ -186,7 +294,19 @@ SOURCE=.\include\CppUTest\MemoryLeakWarningPlugin.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\CppUTest\PlatformSpecificFunctions.h
+SOURCE=.\include\CppUTest\MockTestOutput.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTest\NullTest.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\Platforms\VisualCpp\Platform.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\CppUTest\RealTestOutput.h
 # End Source File
 # Begin Source File
 
@@ -194,15 +314,7 @@ SOURCE=.\include\CppUTest\SimpleString.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\CppUTest\StandardCLibrary.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\CppUTest\TestFailure.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\CppUTest\TestFilter.h
+SOURCE=.\include\CppUTest\SimpleStringExtensions.h
 # End Source File
 # Begin Source File
 
@@ -214,7 +326,7 @@ SOURCE=.\include\CppUTest\TestHarness_c.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\CppUTest\TestMemoryAllocator.h
+SOURCE=.\include\CppUTest\TestInstaller.h
 # End Source File
 # Begin Source File
 
@@ -234,15 +346,7 @@ SOURCE=.\include\CppUTest\TestResult.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\CppUTest\TestTestingFixture.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\CppUTest\Utest.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\CppUTest\UtestMacros.h
 # End Source File
 # Begin Source File
 

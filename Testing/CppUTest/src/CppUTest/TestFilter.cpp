@@ -28,52 +28,63 @@
 #include "CppUTest/CppUTestConfig.h"
 #include "CppUTest/TestFilter.h"
 
-TestFilter::TestFilter() : strictMatching_(false)
+TestFilter::TestFilter() : strictMatching_(false), next_(NULL)
 {
 }
 
-TestFilter::TestFilter(const SimpleString& filter) : strictMatching_(false)
+TestFilter::TestFilter(const SimpleString& filter) : strictMatching_(false), next_(NULL)
 {
-	filter_ = filter;
+    filter_ = filter;
 }
 
-TestFilter::TestFilter(const char* filter) : strictMatching_(false)
+TestFilter::TestFilter(const char* filter) : strictMatching_(false), next_(NULL)
 {
-	filter_ = filter;
+    filter_ = filter;
+}
+
+TestFilter* TestFilter::add(TestFilter* filter)
+{
+    next_ = filter;
+    return this;
+}
+
+TestFilter* TestFilter::getNext() const
+{
+    return next_;
 }
 
 void TestFilter::strictMatching()
 {
-	strictMatching_ = true;
+    strictMatching_ = true;
 }
 
 bool TestFilter::match(const SimpleString& name) const
 {
-	if (strictMatching_)
-		return name == filter_;
-	return name.contains(filter_);
+    if(strictMatching_)
+        return name == filter_;
+    return name.contains(filter_);
 }
 
 bool TestFilter::operator==(const TestFilter& filter) const
 {
-	return (filter_ == filter.filter_ && strictMatching_ == filter.strictMatching_);
+    return (filter_ == filter.filter_ && strictMatching_ == filter.strictMatching_);
 }
 
 bool TestFilter::operator!=(const TestFilter& filter) const
 {
-	return !(filter == *this);
+    return !(filter == *this);
 }
 
 SimpleString TestFilter::asString() const
 {
-	SimpleString textFilter =  StringFromFormat("TestFilter: \"%s\"", filter_.asCharString());
-	if (strictMatching_)
-		textFilter += " with strict matching";
-	return textFilter;
+    SimpleString textFilter =  StringFromFormat("TestFilter: \"%s\"", filter_.asCharString());
+    if (strictMatching_)
+        textFilter += " with strict matching";
+    return textFilter;
 }
 
 SimpleString StringFrom(const TestFilter& filter)
 {
-	return filter.asString();
+    return filter.asString();
 }
 
