@@ -1,7 +1,6 @@
-/*! \file uassert.cpp
- \brief User-defined assert implementation for TDD
-
- Copyright (c) 2013 - General Electric - All rights reserved.
+/*!
+ * @file
+ * @brief User-defined assert implementation for TDD
  */
 
 #include <stdexcept>
