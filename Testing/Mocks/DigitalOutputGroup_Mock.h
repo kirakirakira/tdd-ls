@@ -1,8 +1,6 @@
 /*!
  * @file
  * @brief Digital output group mock.
- *
- * Copyright (c) 2013 - General Electric Corporation - All rights reserved.
  */
 
 #ifndef DIGITALOUTPUTGROUP_MOCK_H
