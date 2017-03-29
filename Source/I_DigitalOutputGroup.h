@@ -1,8 +1,6 @@
 /*!
  * @file
  * @brief Digital Output group consisting of multiple Digital Outputs organized into channels.
- *
- * Copyright (c) 2013 - General Electric Corporation - All rights reserved.
  */
 
 #ifndef I_DIGITALOUTPUTGROUP_H
