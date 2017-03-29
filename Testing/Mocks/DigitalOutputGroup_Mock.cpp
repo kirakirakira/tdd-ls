@@ -1,8 +1,6 @@
 /*!
  * @file
  * @brief Implementation of a digital output group mock.
- *
- * Copyright (c) 2013 - General Electric Corporation - All rights reserved.
  */
 
 #include "DigitalOutputGroup_Mock.h"
