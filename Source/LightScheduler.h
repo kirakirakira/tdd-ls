@@ -2,8 +2,6 @@
  * @file
  * @brief Simple light scheduler.  Uses a digital output group to write to the controlled lights.  Uses
  * a time source to get the current time.
- *
- * Copyright (c) 2014 - General Electric - All rights reserved.
  */
 
 #ifndef LIGHTSCHEDULER_H
