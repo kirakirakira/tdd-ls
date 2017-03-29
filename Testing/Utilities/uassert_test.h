@@ -1,11 +1,10 @@
-/*! \file uassert_test.h
- \brief User-defined assert mechanism
-
- Copyright (c) 2013 - General Electric - All rights reserved.
+/*!
+ * @file
+ * @brief User-defined assert mechanism
  */
 
-#ifndef UASSERT_TEST_H_
-#define UASSERT_TEST_H_
+#ifndef UASSERT_TEST_H
+#define UASSERT_TEST_H
 
 #define CHECK_ASSERTION_FAILED(code) \
    uassert_ExpectAssertion(); \
@@ -15,4 +14,4 @@
 extern void uassert_ExpectAssertion(void);
 extern bool uassert_Asserted(void);
 
-#endif /* UASSERT_TEST_H_ */
+#endif
