@@ -1,8 +1,6 @@
 /*!
  * @file
  * @brief Implementation of TimeSource_Mock.
- *
- * Copyright (c) 2013 - General Electric - All rights reserved.
  */
 
 #include <stdbool.h>
