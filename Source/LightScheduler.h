@@ -6,7 +6,6 @@
  * Copyright (c) 2014 - General Electric - All rights reserved.
  */
 
-
 #ifndef LIGHTSCHEDULER_H
 #define LIGHTSCHEDULER_H
 
