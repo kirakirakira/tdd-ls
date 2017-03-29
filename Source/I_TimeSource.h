@@ -1,8 +1,6 @@
 /*!
  * @file
  * @brief Generic time source.
- *
- * Copyright (c) 2013 - General Electric - All rights reserved.
  */
 
 #ifndef I_TIMESOURCE_H
