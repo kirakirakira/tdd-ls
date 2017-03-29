@@ -1,5 +1,7 @@
 Testing/Build
 Testing/CppUTest/lib
+Testing/CppUTest/.deps
 .DS_Store
 *.a
 *.o
+*.Po
