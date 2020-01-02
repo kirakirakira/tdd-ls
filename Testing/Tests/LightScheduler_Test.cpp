@@ -48,6 +48,11 @@ TEST_GROUP(LightScheduler)
       mock().expectOneCall("Write").onObject(&fakeDigitalOutputGroup.interface).withParameter("channel", lightId).withParameter("state", true);
    }
 
+   void WhichLightIsOff(DigitalOutputChannel_t lightId)
+   {
+      mock().expectOneCall("Write").onObject(&fakeDigitalOutputGroup.interface).withParameter("channel", lightId).withParameter("state", false);
+   }
+
    void WhenSchedulerIsRun(LightScheduler_t *instance)
    {
       LightScheduler_Run(instance);
@@ -84,5 +89,18 @@ TEST(LightScheduler, ShouldScheduleTwoLightsOnAtDifferentTimes)
    WhenSchedulerIsRun(&scheduler);
    WhenTimeIs(11);
    WhichLightIsOn(2);
+   WhenSchedulerIsRun(&scheduler);
+}
+
+TEST(LightScheduler, ShouldScheduleOneLightOnThenOff)
+{
+   LightSchedulerIsInitialized();
+   EventScheduledAt(&scheduler, 1, true, 9);
+   EventScheduledAt(&scheduler, 1, false, 10);
+   WhenTimeIs(9);
+   WhichLightIsOn(1);
+   WhenSchedulerIsRun(&scheduler);
+   WhenTimeIs(10);
+   WhichLightIsOff(1);
    WhenSchedulerIsRun(&scheduler);
 }

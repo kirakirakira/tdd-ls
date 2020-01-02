@@ -26,7 +26,7 @@ void LightScheduler_Run(LightScheduler_t *instance)
 
     for(i = 0; i < instance->numSchedules; i++)
     {
-        if(time == instance->schedules[i].time) {
+        if((time == instance->schedules[i].time)) {
             DigitalOutputGroup_Write(instance->lights, instance->schedules[i].lightId, instance->schedules[i].lightState); 
         }
     }
