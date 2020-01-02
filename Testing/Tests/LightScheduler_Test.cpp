@@ -1,13 +1,15 @@
 /*!
- * @file
- * @brief Tests for light scheduler implementation.
- */
+
+* @file
+
+* @brief Tests for light scheduler implementation.
+
+*/
 
 extern "C"
 {
 #include "LightScheduler.h"
 }
-
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 #include "DigitalOutputGroup_Mock.h"
@@ -17,7 +19,6 @@ extern "C"
 TEST_GROUP(LightScheduler)
 {
    LightScheduler_t scheduler;
-
    DigitalOutputGroup_Mock_t fakeDigitalOutputGroup;
    TimeSource_Mock_t fakeTimeSource;
 
@@ -25,16 +26,63 @@ TEST_GROUP(LightScheduler)
    {
       DigitalOutputGroup_Mock_Init(&fakeDigitalOutputGroup);
       TimeSource_Mock_Init(&fakeTimeSource);
-
-//      LightScheduler_Init(&scheduler, (I_DigitalOutputGroup_t *)&fakeDigitalOutputGroup, (I_TimeSource_t *)&fakeTimeSource);
    }
 
-   void teardown()
+   void LightSchedulerIsInitialized()
    {
+      LightScheduler_Init(&scheduler, (I_DigitalOutputGroup_t *)&fakeDigitalOutputGroup, (I_TimeSource_t *)&fakeTimeSource);
+   }
+
+   void EventScheduledAt(LightScheduler_t *instance, DigitalOutputChannel_t lightId, bool lightState, TimeSourceTickCount_t time)
+   {
+      LightScheduler_AddSchedule(instance, lightId, lightState, time);  
+   }
+
+   void WhenTimeIs(TimeSourceTickCount_t time)
+   {
+      mock().expectOneCall("GetTicks").onObject(&fakeTimeSource.interface).andReturnValue(time);
+   }
+
+   void WhichLightIsOn(DigitalOutputChannel_t lightId)
+   {
+      mock().expectOneCall("Write").onObject(&fakeDigitalOutputGroup.interface).withParameter("channel", lightId).withParameter("state", true);
+   }
+
+   void WhenSchedulerIsRun(LightScheduler_t *instance)
+   {
+      LightScheduler_Run(instance);
    }
 };
 
-TEST(LightScheduler, FirstTest)
+TEST(LightScheduler, ShouldScheduleOneLightOn)
 {
-   FAIL("Oh good the tests are working");
+   LightSchedulerIsInitialized();
+   EventScheduledAt(&scheduler, 1, true, 10);
+   WhenTimeIs(10);
+   WhichLightIsOn(1);
+   WhenSchedulerIsRun(&scheduler);
+}
+
+TEST(LightScheduler, ShouldScheduleTwoLightsOn)
+{
+   LightSchedulerIsInitialized();
+   EventScheduledAt(&scheduler, 1, true, 10);
+   EventScheduledAt(&scheduler, 2, true, 10);
+   WhenTimeIs(10);
+   WhichLightIsOn(1);
+   WhichLightIsOn(2);
+   WhenSchedulerIsRun(&scheduler);
+}
+
+TEST(LightScheduler, ShouldScheduleTwoLightsOnAtDifferentTimes)
+{
+   LightSchedulerIsInitialized();
+   EventScheduledAt(&scheduler, 1, true, 10);
+   EventScheduledAt(&scheduler, 2, true, 11);
+   WhenTimeIs(10);
+   WhichLightIsOn(1);
+   WhenSchedulerIsRun(&scheduler);
+   WhenTimeIs(11);
+   WhichLightIsOn(2);
+   WhenSchedulerIsRun(&scheduler);
 }

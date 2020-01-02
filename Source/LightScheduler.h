@@ -17,13 +17,17 @@
 
 typedef struct
 {
-   int dummy;
-   // TODO need to add data required to store a schedule
+   TimeSourceTickCount_t time;
+   DigitalOutputChannel_t lightId;
+   bool lightState;
 } Schedule_t;
 
 typedef struct
 {
    Schedule_t schedules[MAX_SCHEDULES];
+   uint8_t numSchedules;
+   I_TimeSource_t *timeSource;
+   I_DigitalOutputGroup_t *lights;
 } LightScheduler_t;
 
 /*!
