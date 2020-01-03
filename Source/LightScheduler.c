@@ -4,30 +4,56 @@
  */
 
 #include "LightScheduler.h"
+#include "uassert.h"
 
 void LightScheduler_Init(LightScheduler_t *instance, I_DigitalOutputGroup_t *lights, I_TimeSource_t *timeSource)
 {
-    instance->timeSource = timeSource;
-    instance->lights = lights;
+   uassert(instance);
+   instance->timeSource = timeSource;
+   instance->lights = lights;
 }
 
 void LightScheduler_AddSchedule(LightScheduler_t *instance, uint8_t lightId, bool lightState, TimeSourceTickCount_t time)
 {
-    instance->schedules[instance->numSchedules].lightId = lightId;
-    instance->schedules[instance->numSchedules].lightState = lightState;
-    instance->schedules[instance->numSchedules].time = time;
-    instance->numSchedules++;
+   uint8_t sizeSchedules = sizeof(instance->schedules) / sizeof(instance->schedules[0]);
+   uint8_t i;
+   for(i = 0; i < sizeSchedules; i++)
+   {
+      if(instance->schedules[i].active == false)
+      {
+         instance->schedules[i].lightId = lightId;
+         instance->schedules[i].lightState = lightState;
+         instance->schedules[i].time = time;
+         instance->schedules[i].active = true;
+         instance->numSchedules++;
+         break;
+      }
+   }
 }
 
 void LightScheduler_Run(LightScheduler_t *instance)
 {
-    TimeSourceTickCount_t time = TimeSource_GetTicks(instance->timeSource);
-    uint8_t i;
+   TimeSourceTickCount_t time = TimeSource_GetTicks(instance->timeSource);
+   uint8_t i;
 
-    for(i = 0; i < instance->numSchedules; i++)
-    {
-        if((time == instance->schedules[i].time)) {
-            DigitalOutputGroup_Write(instance->lights, instance->schedules[i].lightId, instance->schedules[i].lightState); 
-        }
-    }
+   for(i = 0; i < instance->numSchedules; i++)
+   {
+      if((time == instance->schedules[i].time) && (instance->schedules[i].active))
+      {
+         DigitalOutputGroup_Write(instance->lights, instance->schedules[i].lightId, instance->schedules[i].lightState);
+      }
+   }
+}
+
+void LightScheduler_RemoveSchedule(LightScheduler_t *instance, uint8_t lightId, bool lightState, TimeSourceTickCount_t time)
+{
+   uint8_t i;
+
+   for(i = 0; i < instance->numSchedules; i++)
+   {
+      if((instance->schedules[i].lightId == lightId) && (instance->schedules[i].lightState == lightState) && (instance->schedules[i].time == time))
+      {
+         instance->schedules[i].active = false;
+      }
+   }
 }
