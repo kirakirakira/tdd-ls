@@ -72,6 +72,23 @@ TEST_GROUP(LightScheduler)
 TEST(LightScheduler, InitNullChecks)
 {
    CHECK_ASSERTION_FAILED(LightScheduler_Init(NULL, (I_DigitalOutputGroup_t *)&fakeDigitalOutputGroup, (I_TimeSource_t *)&fakeTimeSource));
+   CHECK_ASSERTION_FAILED(LightScheduler_Init(&scheduler, NULL, (I_TimeSource_t *)&fakeTimeSource));
+   CHECK_ASSERTION_FAILED(LightScheduler_Init(&scheduler, (I_DigitalOutputGroup_t *)&fakeDigitalOutputGroup, NULL));
+}
+
+TEST(LightScheduler, CheckNullSchedulerAddEventFails)
+{
+   CHECK_ASSERTION_FAILED(EventScheduledAt(NULL, 1, true, 10));
+}
+
+TEST(LightScheduler, CheckNullSchedulerRemoveEventFails)
+{
+   CHECK_ASSERTION_FAILED(RemoveScheduleAt(NULL, 1, true, 10));
+}
+
+TEST(LightScheduler, CheckNullSchedulerRunFails)
+{
+   CHECK_ASSERTION_FAILED(WhenSchedulerIsRun(NULL));
 }
 
 TEST(LightScheduler, ShouldScheduleOneLightOn)
@@ -196,9 +213,11 @@ TEST(LightScheduler, ShouldAddScheduleInInactiveScheduleSpot)
    WhenSchedulerIsRun(&scheduler);
 }
 
-// TEST(LightScheduler, RemoveInvalidSchedule)
-// {
-//    LightSchedulerIsInitialized();
-//    EventScheduledAt(&scheduler, 1, true, 20);
-//    CHECK_ASSERTION_FAILED(RemoveScheduleAt(&scheduler, 2, false, 24));
-// }
+TEST(LightScheduler, RemoveInvalidSchedule)
+{
+   LightSchedulerIsInitialized();
+   EventScheduledAt(&scheduler, 1, true, 20);
+   CHECK_ASSERTION_FAILED(RemoveScheduleAt(&scheduler, 2, false, 24));
+}
+
+
