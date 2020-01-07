@@ -43,6 +43,34 @@ TEST_GROUP(LightScheduler)
       LightScheduler_AddSchedule(instance, lightId, lightState, time);
    }
 
+   void LightScheduledOnAt(LightScheduler_t * instance, DigitalOutputChannel_t lightId, TimeSourceTickCount_t time)
+   {
+      LightScheduler_AddSchedule(instance, lightId, true, time);
+   }
+
+   void LightScheduledOffAt(LightScheduler_t * instance, DigitalOutputChannel_t lightId, TimeSourceTickCount_t time)
+   {
+      LightScheduler_AddSchedule(instance, lightId, false, time);
+   }
+
+   void ScheduleMaximumSchedulesOnAt(LightScheduler_t * instance, TimeSourceTickCount_t time)
+   {
+      uint8_t i;
+      for(i = 0; i < MAX_SCHEDULES; i++)
+      {
+         LightScheduledOnAt(&scheduler, i + 1, time);
+      }
+   }
+
+   void Lights1to10ShouldBeOn(LightScheduler_t * instance)
+   {
+      uint8_t i;
+      for(i = 0; i < MAX_SCHEDULES; i++)
+      {
+         LightShouldBeOn(i+1);
+      }
+   }
+
    void RemoveScheduleAt(LightScheduler_t * instance, DigitalOutputChannel_t lightId, bool lightState, TimeSourceTickCount_t time)
    {
       LightScheduler_RemoveSchedule(instance, lightId, lightState, time);
@@ -94,7 +122,7 @@ TEST(LightScheduler, CheckNullSchedulerRunFails)
 TEST(LightScheduler, ShouldScheduleOneLightOn)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 10);
+   LightScheduledOnAt(&scheduler, 1, 10);
    WhenTimeIs(10);
    LightShouldBeOn(1);
    WhenSchedulerIsRun(&scheduler);
@@ -103,8 +131,8 @@ TEST(LightScheduler, ShouldScheduleOneLightOn)
 TEST(LightScheduler, ShouldScheduleTwoLightsOn)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 10);
-   EventScheduledAt(&scheduler, 2, true, 10);
+   LightScheduledOnAt(&scheduler, 1, 10);
+   LightScheduledOnAt(&scheduler, 2, 10);
    WhenTimeIs(10);
    LightShouldBeOn(1);
    LightShouldBeOn(2);
@@ -114,8 +142,8 @@ TEST(LightScheduler, ShouldScheduleTwoLightsOn)
 TEST(LightScheduler, ShouldScheduleTwoLightsOnAtDifferentTimes)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 10);
-   EventScheduledAt(&scheduler, 2, true, 11);
+   LightScheduledOnAt(&scheduler, 1, 10);
+   LightScheduledOnAt(&scheduler, 2, 11);
    WhenTimeIs(10);
    LightShouldBeOn(1);
    WhenSchedulerIsRun(&scheduler);
@@ -127,8 +155,8 @@ TEST(LightScheduler, ShouldScheduleTwoLightsOnAtDifferentTimes)
 TEST(LightScheduler, ShouldScheduleOneLightOnThenOff)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 9);
-   EventScheduledAt(&scheduler, 1, false, 10);
+   LightScheduledOnAt(&scheduler, 1, 9);
+   LightScheduledOffAt(&scheduler, 1, 10);
    WhenTimeIs(9);
    LightShouldBeOn(1);
    WhenSchedulerIsRun(&scheduler);
@@ -140,7 +168,7 @@ TEST(LightScheduler, ShouldScheduleOneLightOnThenOff)
 TEST(LightScheduler, ShouldDoNothingIfAtDifferentTime)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 10);
+   LightScheduledOnAt(&scheduler, 1, 10);
    WhenTimeIs(11);
    NothingShouldHappen();
    WhenSchedulerIsRun(&scheduler);
@@ -149,7 +177,7 @@ TEST(LightScheduler, ShouldDoNothingIfAtDifferentTime)
 TEST(LightScheduler, ShouldDoNothingAfterRemoveScheduleOfOneLight)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 9);
+   LightScheduledOnAt(&scheduler, 1, 9);
    RemoveScheduleAt(&scheduler, 1, true, 9);
    WhenTimeIs(9);
    NothingShouldHappen();
@@ -159,46 +187,19 @@ TEST(LightScheduler, ShouldDoNothingAfterRemoveScheduleOfOneLight)
 TEST(LightScheduler, ShouldDoNothingOnOneMoreThanMaxSchedules)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 10);
-   EventScheduledAt(&scheduler, 2, true, 10);
-   EventScheduledAt(&scheduler, 3, true, 10);
-   EventScheduledAt(&scheduler, 4, true, 10);
-   EventScheduledAt(&scheduler, 5, true, 10);
-   EventScheduledAt(&scheduler, 6, true, 10);
-   EventScheduledAt(&scheduler, 7, true, 10);
-   EventScheduledAt(&scheduler, 8, true, 10);
-   EventScheduledAt(&scheduler, 9, true, 10);
-   EventScheduledAt(&scheduler, 10, true, 10);
-   EventScheduledAt(&scheduler, 11, true, 10);
+   ScheduleMaximumSchedulesOnAt(&scheduler, 10);
+   LightScheduledOnAt(&scheduler, 11, 10);
    WhenTimeIs(10);
-   LightShouldBeOn(1);
-   LightShouldBeOn(2);
-   LightShouldBeOn(3);
-   LightShouldBeOn(4);
-   LightShouldBeOn(5);
-   LightShouldBeOn(6);
-   LightShouldBeOn(7);
-   LightShouldBeOn(8);
-   LightShouldBeOn(9);
-   LightShouldBeOn(10);
+   Lights1to10ShouldBeOn(&scheduler);
    WhenSchedulerIsRun(&scheduler);
 }
 
 TEST(LightScheduler, ShouldAddScheduleInInactiveScheduleSpot)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 10);
-   EventScheduledAt(&scheduler, 2, true, 10);
-   EventScheduledAt(&scheduler, 3, true, 10);
-   EventScheduledAt(&scheduler, 4, true, 10);
-   EventScheduledAt(&scheduler, 5, true, 10);
-   EventScheduledAt(&scheduler, 6, true, 10);
-   EventScheduledAt(&scheduler, 7, true, 10);
-   EventScheduledAt(&scheduler, 8, true, 10);
-   EventScheduledAt(&scheduler, 9, true, 10);
-   EventScheduledAt(&scheduler, 10, true, 10);
+   ScheduleMaximumSchedulesOnAt(&scheduler, 10);
    RemoveScheduleAt(&scheduler, 5, true, 10);
-   EventScheduledAt(&scheduler, 11, true, 10);
+   LightScheduledOnAt(&scheduler, 11, 10);
    WhenTimeIs(10);
    LightShouldBeOn(1);
    LightShouldBeOn(2);
@@ -216,8 +217,6 @@ TEST(LightScheduler, ShouldAddScheduleInInactiveScheduleSpot)
 TEST(LightScheduler, RemoveInvalidSchedule)
 {
    LightSchedulerIsInitialized();
-   EventScheduledAt(&scheduler, 1, true, 20);
+   LightScheduledOnAt(&scheduler, 1, 20);
    CHECK_ASSERTION_FAILED(RemoveScheduleAt(&scheduler, 2, false, 24));
 }
-
-
