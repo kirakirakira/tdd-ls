@@ -13,8 +13,6 @@
  */
 typedef uint16_t TimeSourceTickCount_t;
 
-struct I_TimeSource_Api_t;
-
 /*!
  * Time source object.
  */

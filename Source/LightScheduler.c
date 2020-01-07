@@ -29,7 +29,7 @@ void LightScheduler_AddSchedule(LightScheduler_t *instance, uint8_t lightId, boo
          instance->schedules[i].time = time;
          instance->schedules[i].active = true;
          instance->numSchedules++;
-         break;
+         return;
       }
    }
 }

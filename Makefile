@@ -67,3 +67,11 @@ upgrade:
 # This will clean up everything including CppUTest
 distclean: clean upgrade
 	make -C $(CPPUTEST_HOME) clean distclean
+
+.PHONY: verbose
+verbose: $(TEST_TARGET)
+	$(RUN_TEST_TARGET) -v
+
+.PHONY: group
+group: $(TEST_TARGET)
+	$(RUN_TEST_TARGET) -g $(GROUP)
